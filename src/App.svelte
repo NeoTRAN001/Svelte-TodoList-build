@@ -1,5 +1,6 @@
 <script>
 	import {db} from "./firebase";
+	import toastr from 'toastr';
 
 	let task = {
 		content: ""
@@ -11,13 +12,34 @@
 
 	const addTask = async () => {
 		await db.collection('tasks').doc().set({ // Create collection in db
-			...task, // Take all data in object
+			...task, // Take all data in object,
+			index: lstTasks.length + 1
 		});
-		console.log("New Task Created");
+		toastr.success('ToDo ha sido agregada', {
+			timeOut: 5000,
+			progressBar: true,
+			positionClass: 'toast-bottom-right'
+		});
 	}
 
 	const deleteTask = async (id) => {
 		await db.collection('tasks').doc(id).delete();
+		toastr.error('ToDo ha sido eliminada', {
+			timeOut: 5000,
+			progressBar: true,
+			positionClass: 'toast-bottom-right'
+		});
+	}
+
+	const deleteAllTask = async () => {
+		await lstTasks.forEach(currentTask => {
+			db.collection('tasks').doc(currentTask.id).delete();
+		});
+		toastr.warning('Se ha eliminado Todo los ToDo', {
+			timeOut: 5000,
+			progressBar: true,
+			positionClass: 'toast-bottom-right'
+		});
 	}
 
 	const editTask = (currentTask) => {
@@ -29,6 +51,12 @@
 
 	const updateTask = async () => {
 		await db.collection('tasks').doc(currentId).update(task);
+		toastr.success('ToDo ha sido actualizada', {
+			timeOut: 5000,
+			progressBar: true,
+			positionClass: 'toast-bottom-right'
+		});
+		saveTask = true;
 	}
 
 	const handleSubmit = () => {
@@ -62,7 +90,7 @@
 			<form on:submit|preventDefault={handleSubmit}> <!-- Call to function in Svelte -->
 				<div class="row">
 					<div class="col-10">
-						<input class="form-control" bind:value={task.content} type="text" placeholder="Write a new task">
+						<input required class="form-control" bind:value={task.content} type="text" placeholder="Write a new task">
 					</div>
 					<div class="col-2">
 						<button class="btn btn-info">
@@ -76,7 +104,7 @@
 			<div class="row">
 				<div class="col-10">ToDo-List for Iron Bit by Ricoy</div>
 				<div class="col-2">
-					<button class="btn btn-dark">
+					<button class="btn btn-dark"  on:click={deleteAllTask}>
 						<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
 						</svg>
@@ -106,5 +134,8 @@
 				</div>
 			</li>
 		{/each}
+		{#if lstTasks.length == 0} 
+			<li class="list-group-item">No hay ToDo's, tomate un cafe!</li>
+		{/if}
 	</ul>
 </center>
