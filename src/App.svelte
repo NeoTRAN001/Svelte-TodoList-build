@@ -90,7 +90,7 @@
 
 
 <center>
-	<ul class="list-group">
+	<ul class="list-group mt-4 mb-4">
 		<li class="list-group-item">
 			<form on:submit|preventDefault={handleSubmit}> <!-- Call to function in Svelte -->
 				<div class="row">
@@ -116,6 +116,8 @@
 				</div>
 			</form>
 		</li>
+	</ul>
+	<ul class="list-group">
 		<li class="list-group-item list-group-item-success">
 			<div class="row">
 				<div class="col-10">ToDo-List for Iron Bit by Ricoy</div>
